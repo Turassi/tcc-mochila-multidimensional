@@ -1,0 +1,21 @@
+ORIGEM DAS INSTANCIAS
+=====================
+
+grupo1/  -> 11 instancias usadas por Andre e Parpinelli (2015), com otimo conhecido.
+            Origem: OR-Library, arquivo mknap2 (Beasley), conjunto "SAC-94".
+            http://people.brunel.ac.uk/~mastjjb/jeb/orlib/mknapinfo.html
+            Os arquivos foram conferidos em duas copias independentes e sao identicos.
+
+grupo2/  -> primeira instancia de cada arquivo mknapcb1 a mknapcb9 da OR-Library
+            (Chu e Beasley, 1998). Nome: OR<limites>x<itens>-0.25_1
+            Otimo desconhecido no arquivo: o gap e medido contra o limitante
+            da relacao linear (mesma regua usada por Chu e Beasley).
+
+frete/   -> cenarios FICTICIOS de frete fracionado, gerados por gerar_frete.py.
+            O otimo foi calculado com um resolvedor exato (HiGHS, via SciPy).
+
+Formato de todos os .dat:
+  n m otimo
+  lucros (n numeros)
+  pesos (m linhas de n numeros)
+  capacidades (m numeros)
