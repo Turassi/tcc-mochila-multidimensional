@@ -1,0 +1,167 @@
+﻿======================================================================
+ METAHEURÍSTICAS CLÁSSICAS E RECENTES NO PROBLEMA DA MOCHILA
+ MULTIDIMENSIONAL: ESTUDO COMPARATIVO APLICADO AO FRETE FRACIONADO
+ Trabalho de Conclusão de Curso — Engenharia de Software
+ Autor: Christian Leão Turassi
+ Orientador: Prof. Leanderson André
+======================================================================
+
+1. OBJETIVO
+-----------
+Comparar o desempenho do Algoritmo Genético (AG), da Evolução
+Diferencial Binária (EDB) e do Algoritmo do Quati (COA) na resolução do
+Problema da Mochila Multidimensional 0-1, quanto à qualidade da
+solução, à consistência e à velocidade de convergência, com aplicação
+a cenários de frete fracionado.
+
+2. REQUISITOS
+-------------
+- Windows 10 ou superior (o código Python também roda em Linux e macOS).
+- Python 3.10 ou superior (testado com 3.12 e 3.15), instalado a partir
+  de https://www.python.org, com a opção "Add python.exe to PATH".
+- Bibliotecas: numpy, scipy, pandas, matplotlib e openpyxl
+  (instaladas automaticamente pelo passo 1; ver requirements.txt).
+
+3. COMO EXECUTAR
+----------------
+Executar, em ordem, os arquivos abaixo (dois cliques):
+
+  1_instalar.bat            Instala as bibliotecas (apenas uma vez).
+  2_rodar_experimento.bat   Executa o experimento completo
+                            (2 algoritmos x 23 instâncias x 30 execuções;
+                            de 1 a 3 horas, conforme o computador).
+  3_gerar_analise.bat       Gera tabelas, testes estatísticos e gráficos.
+  4_abrir_laboratorio.bat   Abre a ferramenta complementar (seção 6).
+
+Equivalentes em linha de comando:
+  py experimento.py                 (aceita --execucoes N)
+  py analise.py
+  py laboratorio.py
+
+O experimento é retomável: se interrompido, a nova execução continua
+a partir da última execução concluída.
+
+REPRODUÇÃO DOS RESULTADOS DO ARTIGO
+Os resultados apresentados no artigo (3 algoritmos, 23 instâncias,
+100 execuções) foram obtidos pelo Laboratório (seção 6), com a
+configuração abaixo:
+  1. Abrir o 4_abrir_laboratorio.bat.
+  2. Aba "1. Algoritmos": marcar somente Algoritmo Genético,
+     Evolução Diferencial Binária e Quati (Coati Optimization Algorithm).
+  3. Aba "2. Problemas": clicar em "Conjunto do TCC (23)".
+  4. Aba "3. Rodar": 100 execuções por problema e
+     "100.100 tentativas (igual ao TCC)"; clicar em "Rodar experimento".
+  5. Aba "4. Resultados": ranking, testes estatísticos, gráficos e
+     botão "Exportar para Excel".
+Como as sementes são fixas (2026 + número da execução), os valores
+obtidos são idênticos aos do artigo. Duração aproximada: 1 a 2 horas
+em um processador de 24 núcleos.
+Os passos 2 e 3 (AG x EDB, 30 execuções) correspondem ao protocolo
+inicial do trabalho; as execuções 1 a 30 do AG e da EDB são as mesmas
+nos dois protocolos.
+
+4. PROTOCOLO EXPERIMENTAL
+-------------------------
+4.1 Instâncias (pasta "instancias"; origem em instancias/FONTES.txt)
+  Grupo 1  11 instâncias da OR-Library (conjunto SAC-94: PB, PET, SENTO,
+           WEING, WEISH), com valor ótimo conhecido. São as mesmas de
+           André e Parpinelli (2015), usadas para validação.
+  Grupo 2  9 instâncias de Chu e Beasley (1998): a primeira de cada
+           arquivo mknapcb1 a mknapcb9 (5, 10 e 30 restrições; 100, 250
+           e 500 itens; folga 0,25). Ótimo desconhecido: o gap é medido
+           em relação ao limitante da relaxação linear.
+  Frete    3 cenários fictícios de frete fracionado (80, 120 e 160
+           encomendas; restrições de peso, volume e valor segurado),
+           gerados por gerar_frete.py. Ótimo obtido por programação
+           inteira (solver HiGHS, via SciPy).
+  Todas as instâncias da OR-Library foram conferidas em duas cópias
+  independentes, que se mostraram idênticas.
+
+4.2 Parâmetros (arquivo config.py; valores de André e Parpinelli, 2015)
+  Comuns       população 100; 1.000 gerações; orçamento de 100.100
+               avaliações da função objetivo; 30 execuções por instância.
+  AG           seleção por torneio (tamanho 3); cruzamento uniforme (80%);
+               mutação bit-flip (5% por gene); elitismo de 1 indivíduo.
+  EDB          taxa de perturbação 50%; taxa de mutação 5%;
+               seleção gulosa.
+  Reparo       remoção aleatória de itens até a viabilidade, idêntico
+               para os dois algoritmos.
+
+4.3 Reprodutibilidade
+  Execução k usa a semente 2026 + k (2027 a 2056). Os dois algoritmos
+  usam as mesmas sementes e, portanto, partem da mesma população
+  inicial. Os resultados foram reproduzidos de forma idêntica em dois
+  computadores diferentes.
+
+4.4 Métricas
+  Melhor valor, média e desvio padrão; gap (%) em relação ao ótimo ou
+  ao limitante; taxa de sucesso (execuções que atingiram o ótimo);
+  avaliações até o ótimo; tempo de execução; gap com 10%, 50% e 100%
+  do orçamento (convergência).
+
+4.5 Análise estatística (Derrac et al., 2011), nível de significância 5%
+  Por instância     teste de Mann-Whitney sobre as 30 execuções.
+  Global            teste de Wilcoxon pareado sobre o gap médio de
+                    cada instância.
+
+4.6 Validação
+  Os resultados do Grupo 1 são comparados com a Tabela II de André e
+  Parpinelli (2015) (aba "4 Validação artigo" da planilha).
+
+5. ARQUIVOS GERADOS (pasta "resultados")
+----------------------------------------
+  execucoes.csv       Uma linha por execução (dados brutos).
+  convergencia.csv    Melhor valor a cada 1.000 avaliações.
+  tabelas_tcc.xlsx    Resumo, testes por instância, teste global,
+                      validação, gap por orçamento e cenário de frete.
+  resumo.txt          Síntese dos resultados em texto.
+  graficos\           Convergência por instância e boxplots por grupo.
+
+6. LABORATÓRIO (ferramenta complementar)
+----------------------------------------
+Interface gráfica para estudos exploratórios, fora do protocolo do TCC:
+  - 8 algoritmos sob as mesmas regras (mesmo orçamento, reparo e
+    população inicial): AG, EDB, Enxame de Partículas Binário, Colônia
+    de Formigas Binária (versão simplificada de Kong et al., 2008),
+    Têmpera Simulada, Lobo Cinzento, Jaya e Coati Optimization
+    Algorithm. GWO, Jaya e COA usam codificação contínua em [0, 1] com
+    limiar 0,5.
+  - Seleção de instâncias, conjuntos recomendados e geração aleatória
+    (método de Chu e Beasley, não correlacionado ou frete).
+  - Detalhes de cada instância (valores, pesos, capacidades, folga e
+    correlação), com exportação para Excel.
+  - Ranking médio, teste de Friedman, pós-teste de Wilcoxon com
+    correção de Holm, gráficos e exportação para Excel.
+  Resultados em resultados\laboratorio\<data e hora>.
+
+7. ESTRUTURA DO CÓDIGO
+----------------------
+  config.py            Parâmetros do experimento.
+  algoritmos.py        AG e EDB, avaliador e operador de reparo.
+  instancias.py        Leitura de instâncias e relaxação linear.
+  experimento.py       Execução paralela e retomável do experimento.
+  analise.py           Tabelas, testes estatísticos e gráficos.
+  gerar_frete.py       Geração dos cenários de frete fracionado.
+  algoritmos_extra.py  Algoritmos adicionais do laboratório.
+  problemas.py         Catálogo, recomendações e gerador de instâncias.
+  motor_lab.py         Execução dos experimentos do laboratório.
+  estatistica_lab.py   Estatística para múltiplos algoritmos.
+  laboratorio.py       Interface gráfica (Tkinter).
+  janela_problema.py   Janela de detalhes de uma instância.
+
+8. REFERÊNCIAS PRINCIPAIS
+-------------------------
+André, L.; Parpinelli, R. S. (2015). The Multiple Knapsack Problem
+  Approached by a Binary Differential Evolution Algorithm with Adaptive
+  Parameters. Polibits, 51, 47-54.
+Beasley, J. E. OR-Library. http://people.brunel.ac.uk/~mastjjb/jeb/orlib/
+Chu, P. C.; Beasley, J. E. (1998). A genetic algorithm for the
+  multidimensional knapsack problem. Journal of Heuristics, 4, 63-86.
+Derrac, J. et al. (2011). A practical tutorial on the use of
+  nonparametric statistical tests as a methodology for comparing
+  evolutionary and swarm intelligence algorithms. Swarm and
+  Evolutionary Computation, 1(1), 3-18.
+Fréville, A. (2004). The multidimensional 0-1 knapsack problem: An
+  overview. European Journal of Operational Research, 155(1), 1-21.
+Storn, R.; Price, K. (1997). Differential evolution. Journal of Global
+  Optimization, 11(4), 341-359.

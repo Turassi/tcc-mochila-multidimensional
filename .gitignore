@@ -1,0 +1,7 @@
+# Arquivos temporarios do Python
+__pycache__/
+*.pyc
+
+# Resultados gerados ao rodar o programa (podem ser recriados)
+resultados/
+instancias/gerados/
